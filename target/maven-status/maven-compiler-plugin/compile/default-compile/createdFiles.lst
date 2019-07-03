@@ -1,0 +1,17 @@
+model\learning\LectureDetail.class
+controller\UserController.class
+config\WebAppInitializer.class
+service\CourseService.class
+service\UserService.class
+model\learning\Course.class
+service\LectureService.class
+model\user\UserRoles.class
+config\AppConfig.class
+config\CORSFilter.class
+model\user\Users.class
+model\learning\Lecture.class
+controller\CourseController.class
+model\learning\CourseDetail.class
+controller\RoleController.class
+service\RoleService.class
+model\user\Roles.class
