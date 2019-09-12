@@ -3,7 +3,7 @@ package model.user;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import model.learning.CourseDetail;
+import model.livestream.LiveStream;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -21,28 +21,23 @@ public class Users {
     @Column(nullable = false, unique = true)
     private String username;
 
+
     @Column(nullable = false)
     private String password;
 
     @Column
     private String email;
 
-
-    @Column(nullable = false)
+    @Column
     private String lastName;
 
-    @Column(nullable = false)
+    @Column
     private String firstName;
 
     @Temporal(TemporalType.DATE)
     @Column
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dob;
-
-    @JsonIgnore
-    @Column
-    private boolean active;
-
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -50,10 +45,19 @@ public class Users {
 
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<CourseDetail> courseDetails = new ArrayList<>();
+    @OneToMany(mappedBy = "publisher", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<LiveStream> liveStreams = new ArrayList<>();
 
     public Users() {
+    }
+
+    public Users(int id, String username, String email, String lastName, String firstName, Date dob) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.dob = dob;
     }
 
     public int getId() {
@@ -73,10 +77,12 @@ public class Users {
         this.username = username;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
 
+    @JsonProperty
     public void setPassword(String password) {
         this.password = password;
     }
@@ -113,14 +119,6 @@ public class Users {
         this.dob = dob;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
     public List<UserRoles> getUserRoles() {
         return userRoles;
     }
@@ -130,13 +128,11 @@ public class Users {
     }
 
 
-    public List<CourseDetail> getCourseDetails() {
-        return courseDetails;
+    public List<LiveStream> getLiveStreams() {
+        return liveStreams;
     }
 
-    public void setCourseDetails(List<CourseDetail> courseDetails) {
-        this.courseDetails = courseDetails;
+    public void setLiveStreams(List<LiveStream> liveStreams) {
+        this.liveStreams = liveStreams;
     }
-
-
 }

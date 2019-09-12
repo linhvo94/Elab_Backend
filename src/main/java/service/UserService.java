@@ -6,9 +6,14 @@ import model.user.Users;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Transactional
 @Service
@@ -17,47 +22,70 @@ public class UserService {
     @Autowired
     SessionFactory sessionFactory;
 
-    public Users createBaseAccount(Users userReq) {
-        Users user = new Users();
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
-        user.setFirstName(userReq.getFirstName());
-        user.setLastName(userReq.getLastName());
-        user.setEmail(userReq.getEmail());
-        user.setUsername(userReq.getUsername());
-        user.setPassword(userReq.getPassword());
-        user.setDob(userReq.getDob());
 
-        return user;
+    @Autowired
+    ResponseService responseService;
+
+    public ResponseEntity<String> validateUserAccount(Users userReq) {
+        if(userReq.getUsername() == null) {
+            return responseService.handleBadRequest("Username cannot be null.");
+        }
+
+        if(userReq.getPassword() == null) {
+            return responseService.handleBadRequest("Password cannot be null.");
+        }
+
+        if(userReq.getUsername().length() <= 4 ) {
+            return responseService.handleBadRequest("Username must be more than 4 characters.");
+        }
+
+        if(userReq.getPassword().length() <= 4 ) {
+            return responseService.handleBadRequest("Password must be more than 4 characters.");
+        }
+
+        if(findUserByUsername(userReq.getUsername()) != null) {
+            return responseService.handleDuplicateEntityRequest("Username '" + userReq.getUsername()
+                    + "' already exists");
+        }
+
+        return null;
+
     }
 
-    public void createStudentAccount(Users userReq) {
-        Users student = createBaseAccount(userReq);
 
-        UserRoles userRoles = new UserRoles();
-        userRoles.setRole(getRoleByName("ROLE_STUDENT"));
-        student.getUserRoles().add(userRoles);
+    public ResponseEntity<?> createUserAccount(Users userReq, String role) {
+        if (validateUserAccount(userReq) == null) {
+            Users user = new Users();
 
-        sessionFactory.getCurrentSession().save(student);
+            user.setFirstName(userReq.getFirstName());
+            user.setLastName(userReq.getLastName());
+            user.setEmail(userReq.getEmail());
+            user.setUsername(userReq.getUsername());
+            user.setPassword(passwordEncoder.encode(userReq.getPassword()));
+            user.setDob(userReq.getDob());
+
+            UserRoles userRoles = new UserRoles();
+            userRoles.setUser(user);
+            userRoles.setRole(getRoleByName(role));
+            user.getUserRoles().add(userRoles);
+
+
+            sessionFactory.getCurrentSession().save(user);
+            return ResponseEntity.ok().body(user);
+
+        } else {
+            return validateUserAccount(userReq);
+        }
+
     }
 
-    public void createLecturerAccount(Users userReq) {
-        Users lecturer = createBaseAccount(userReq);
 
-        UserRoles userRoles = new UserRoles();
-        userRoles.setRole(getRoleByName("ROLE_LECTURER"));
-        lecturer.getUserRoles().add(userRoles);
-
-        sessionFactory.getCurrentSession().save(lecturer);
-    }
-
-    public void createAdminAccount(Users userReq) {
-        Users admin = createBaseAccount(userReq);
-
-        UserRoles userRoles = new UserRoles();
-        userRoles.setRole(getRoleByName("ROLE_ADMIN"));
-        admin.getUserRoles().add(userRoles);
-
-        sessionFactory.getCurrentSession().save(admin);
+    public List<Users> getAllUsers() {
+        Query query = sessionFactory.getCurrentSession().createQuery("from Users");
+        return query.list();
     }
 
 
@@ -79,6 +107,7 @@ public class UserService {
         userDB.setLastName(userReq.getLastName());
         userDB.setEmail(userReq.getEmail());
         userDB.setDob(userReq.getDob());
+        sessionFactory.getCurrentSession().update(userDB);
     }
 
     public void deleteUser(int id) {

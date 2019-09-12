@@ -5,6 +5,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
@@ -16,7 +17,8 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @EnableWebMvc
-@ComponentScan({"controller", "service", "store"})
+@Import(SecurityConfig.class)
+@ComponentScan({"controller", "config", "service", "store"})
 public class AppConfig {
 
     @Bean
@@ -31,9 +33,14 @@ public class AppConfig {
 
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/elabdb");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("Iphoneno1");
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/elab");
+        dataSource.setUsername("lcq");
+        dataSource.setPassword("lcq");
+
+//        dataSource.setUrl("jdbc:postgresql://localhost:5432/elabdb");
+//        dataSource.setUsername("postgres");
+//        dataSource.setPassword("Iphoneno1");
+
 
         sessionFactoryBean.setDataSource(dataSource);
         sessionFactoryBean.setHibernateProperties(properties);

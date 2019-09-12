@@ -6,6 +6,7 @@
 
     <groupId>com.rmit</groupId>
     <artifactId>E-lab_Backend</artifactId>
+    <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
@@ -13,6 +14,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>4.3.11.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>1.5.7.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -44,7 +51,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.4.1207.jre7</version>
+            <version>9.4.1211</version>
         </dependency>
 
 
@@ -111,13 +118,6 @@
             <artifactId>activation</artifactId>
             <version>1.1.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
-            <version>1.5.7.RELEASE</version>
-        </dependency>
-
-
 
     </dependencies>
 
@@ -132,6 +132,22 @@
                         <source>1.7</source>
                         <target>1.7</target>
                     </configuration>
+                </plugin>
+
+                <plugin>
+
+                    <groupId>org.apache.maven.plugins</groupId>
+
+                    <artifactId>maven-war-plugin</artifactId>
+
+                    <version>2.6</version>
+
+                    <configuration>
+
+                        <failOnMissingWebXml>false</failOnMissingWebXml>
+
+                    </configuration>
+
                 </plugin>
 
 
